@@ -1,2 +1,6 @@
-__pycache__
+# Python cache
+__pycache__/
+*.pyc
+
+# ML model
 hangman_model.pth
