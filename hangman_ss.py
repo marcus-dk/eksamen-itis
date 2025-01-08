@@ -56,29 +56,9 @@ class HangmanStrategy:
     def get_next_guess(self, current_pattern: str, guessed_letters: Set[str]) -> str:
         """Abstract method to be implemented by specific strategies."""
         raise NotImplementedError
-
-class MostCommonLettersStrategy(HangmanStrategy):
-    def get_next_guess(self, current_pattern: str, guessed_letters: Set[str]) -> str:
-        """Return the most frequent letter that hasn't been guessed yet."""
-        available_letters = {
-            letter: freq for letter, freq in self.letter_frequencies.items()
-            if letter not in guessed_letters
-        }
-        return max(available_letters.items(), key=lambda x: x[1])[0]
-
-class LeastCommonLettersStrategy(HangmanStrategy):
-    def get_next_guess(self, current_pattern: str, guessed_letters: Set[str]) -> str:
-        """Return the least frequent letter that hasn't been guessed yet."""
-        available_letters = {
-            letter: freq for letter, freq in self.letter_frequencies.items()
-            if letter not in guessed_letters
-        }
-        return min(available_letters.items(), key=lambda x: x[1])[0]
-
-class EntropyStrategy(HangmanStrategy):
-    def get_next_guess(self, current_pattern: str, guessed_letters: Set[str]) -> str:
-        """Return the letter with highest information gain that hasn't been guessed yet."""
-        # Filter possible words based on current pattern and guessed letters
+    
+    def _get_possible_words(self, current_pattern: str, guessed_letters: Set[str]) -> List[str]:
+        """Filter words based on current pattern and guessed letters."""
         possible_words = []
         pattern_chars = list(current_pattern.lower())
         
@@ -107,6 +87,61 @@ class EntropyStrategy(HangmanStrategy):
             
             if matches:
                 possible_words.append(word)
+        
+        return possible_words
+
+class MostCommonLettersStrategy(HangmanStrategy):
+    def get_next_guess(self, current_pattern: str, guessed_letters: Set[str]) -> str:
+        """Return the most frequent letter from remaining possible words that hasn't been guessed yet."""
+        possible_words = self._get_possible_words(current_pattern, guessed_letters)
+        
+        # If no possible words found (shouldn't happen in normal play), fall back to original frequencies
+        if not possible_words:
+            available_letters = {
+                letter: freq for letter, freq in self.letter_frequencies.items()
+                if letter not in guessed_letters
+            }
+            return max(available_letters.items(), key=lambda x: x[1])[0]
+        
+        # Calculate frequencies from remaining possible words
+        current_frequencies = calculate_letter_frequencies(possible_words)
+        
+        # Filter to only unguessed letters
+        available_letters = {
+            letter: freq for letter, freq in current_frequencies.items()
+            if letter not in guessed_letters
+        }
+        
+        return max(available_letters.items(), key=lambda x: x[1])[0]
+
+class LeastCommonLettersStrategy(HangmanStrategy):
+    def get_next_guess(self, current_pattern: str, guessed_letters: Set[str]) -> str:
+        """Return the least frequent letter from remaining possible words that hasn't been guessed yet."""
+        possible_words = self._get_possible_words(current_pattern, guessed_letters)
+        
+        # If no possible words found (shouldn't happen in normal play), fall back to original frequencies
+        if not possible_words:
+            available_letters = {
+                letter: freq for letter, freq in self.letter_frequencies.items()
+                if letter not in guessed_letters
+            }
+            return min(available_letters.items(), key=lambda x: x[1])[0]
+        
+        # Calculate frequencies from remaining possible words
+        current_frequencies = calculate_letter_frequencies(possible_words)
+        
+        # Filter to only unguessed letters
+        available_letters = {
+            letter: freq for letter, freq in current_frequencies.items()
+            if letter not in guessed_letters
+        }
+        
+        return min(available_letters.items(), key=lambda x: x[1])[0]
+
+class EntropyStrategy(HangmanStrategy):
+    def get_next_guess(self, current_pattern: str, guessed_letters: Set[str]) -> str:
+        """Return the letter with highest information gain that hasn't been guessed yet."""
+        possible_words = self._get_possible_words(current_pattern, guessed_letters)
         
         # If no possible words found (shouldn't happen in normal play), fall back to letter frequencies
         if not possible_words:
