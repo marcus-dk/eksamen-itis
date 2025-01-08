@@ -186,10 +186,9 @@ def play_game(strategy: HangmanStrategy, game: Hangman, show_progress: bool = Fa
 def evaluate_strategy(strategy_name: str, num_games: int = 100, show_example: bool = True) -> float:
     """Evaluate a strategy over multiple games and return win rate."""
     game = Hangman()
-    strategy_class = {
-        'most_common': MostCommonLettersStrategy,
-        'least_common': LeastCommonLettersStrategy,
-        'entropy': EntropyStrategy
+    strategy_class = {'mc': MostCommonLettersStrategy,
+        'lc': LeastCommonLettersStrategy,
+        'e': EntropyStrategy
     }[strategy_name]
     
     strategy = strategy_class(game.word_list)
