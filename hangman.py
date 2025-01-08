@@ -1,3 +1,5 @@
+# hangman project for ITIS class
+
 import random
 from typing import List, Set
 import numpy as np
