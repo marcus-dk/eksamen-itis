@@ -218,7 +218,7 @@ def evaluate_strategy(strategy_name: str, num_games: int = 100, show_example: bo
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Test Hangman strategies')
-    parser.add_argument('strategy', choices=['most_common', 'least_common', 'entropy'],
+    parser.add_argument('strategy', choices=['mc', 'lc', 'e'],
                       help='Which strategy to use')
     parser.add_argument('--games', type=int, default=100,
                       help='Number of games to play (default: 100)')
