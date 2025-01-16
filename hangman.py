@@ -9,7 +9,7 @@ class Hangman:
         if word_list is None:
             # Read words from 500ord.txt
             try:
-                with open('500ord.txt', 'r') as f:
+                with open('words.txt', 'r') as f:
                     all_words = np.array([word.strip().lower() for word in f.readlines()])
                 # Filter words by length and ensure they only contain letters
                 length_mask = (np.char.str_len(all_words) >= min_word_length) & (np.char.str_len(all_words) <= max_word_length)

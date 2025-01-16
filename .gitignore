@@ -5,7 +5,3 @@ __pycache__/
 # ML model
 hangman_model.pth
 
-# Not yet done models
-hangman_ml.py
-hangman_qlearning.py
-hangman_nn.py
