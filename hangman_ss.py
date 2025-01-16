@@ -47,7 +47,7 @@ def calculate_letter_entropy(words: List[str], letter: str, pattern: str) -> flo
     words_with_letter = sum(1 for word in words if letter in word.lower())
     coverage = words_with_letter / total_words
     
-    return entropy + (0.1 * coverage)  # Small bonus for coverage
+    return  entropy + (0.1 * coverage)  # Small bonus for coverage
 
 class HangmanStrategy:
     def __init__(self, word_list: List[str]):
@@ -237,3 +237,7 @@ if __name__ == "__main__":
     
     args = parser.parse_args()
     evaluate_strategy(args.strategy, args.games, not args.no_example)
+
+
+
+# test for eksempel
