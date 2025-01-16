@@ -7,9 +7,9 @@ import numpy as np
 class Hangman:
     def __init__(self, word_list: np.ndarray = None, min_word_length: int = 4, max_word_length: int = 12):
         if word_list is None:
-            # Read words from words.txt
+            # Read words from 500ord.txt
             try:
-                with open('words.txt', 'r') as f:
+                with open('500ord.txt', 'r') as f:
                     all_words = np.array([word.strip().lower() for word in f.readlines()])
                 # Filter words by length and ensure they only contain letters
                 length_mask = (np.char.str_len(all_words) >= min_word_length) & (np.char.str_len(all_words) <= max_word_length)
@@ -19,7 +19,7 @@ class Hangman:
                 if len(self.word_list) == 0:
                     raise ValueError("No words found matching the specified criteria")
             except FileNotFoundError:
-                raise FileNotFoundError("words.txt file not found")
+                raise FileNotFoundError("500ord.txt file not found")
         else:
             self.word_list = word_list if isinstance(word_list, np.ndarray) else np.array(word_list)
         
@@ -64,6 +64,12 @@ class Hangman:
         """Get the current state of the word with unguessed letters as '_'."""
         return ''.join(letter if letter in self.guessed_letters else '_' for letter in self.word)
     
+    def get_ui_word_state(self) -> str:
+        word_state = self.get_word_state()
+        ui_word_state =''.join(f' {letter} ' if letter == '_' else letter for letter in word_state).strip()
+     
+        return ui_word_state
+
     def get_game_state(self):
         """Get the current game state."""
         return {
@@ -97,3 +103,13 @@ if __name__ == "__main__":
     print("\nGame Over!")
     print(f"The word was: {game.word}")
     print("You won!" if game.won else "You lost!")
+
+    # Append results
+    import csv
+    result = (int(game.won),game.word,len(game.word))
+    with open('data_human.csv',mode='a',newline='') as data_human:
+        writer = csv.writer(data_human)
+        writer.writerow(result) 
+
+
+

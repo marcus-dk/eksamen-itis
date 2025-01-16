@@ -1,5 +1,7 @@
 import pygame
 import sys
+import base64
+import csv
 from hangman import Hangman
 
 class HangmanUI:
@@ -9,12 +11,13 @@ class HangmanUI:
         self.height = 600
         self.screen = pygame.display.set_mode((self.width, self.height))
         pygame.display.set_caption("Hangman Game")
-        
+
         # Colors
         self.WHITE = (255, 255, 255)
         self.BLACK = (0, 0, 0)
         self.GRAY = (128, 128, 128)
-        
+        self.BROWN = (153,76,0)
+
         # Fonts
         self.font = pygame.font.Font(None, 48)
         self.small_font = pygame.font.Font(None, 36)
@@ -22,35 +25,45 @@ class HangmanUI:
         # Game instance
         self.game = Hangman()
         
+        #background image
+        self.background = pygame.image.load("valley-312709_1280.png")
+        self.background = pygame.transform.scale(self.background,(self.width,self.height))
+
     def draw_hangman(self):
         """Draw the hangman figure based on remaining tries."""
-        # Base
-        pygame.draw.line(self.screen, self.BLACK, (100, 500), (300, 500), 5)
-        # Pole
-        pygame.draw.line(self.screen, self.BLACK, (200, 500), (200, 100), 5)
-        # Top
-        pygame.draw.line(self.screen, self.BLACK, (200, 100), (400, 100), 5)
-        # Rope
-        pygame.draw.line(self.screen, self.BLACK, (400, 100), (400, 150), 5)
         
+        #New Base (left)
+        pygame.draw.line(self.screen, self.BROWN, (73, 510), (160, 400), 10)
+        #New Base (right)
+        pygame.draw.line(self.screen, self.BROWN, (247, 510), (160, 400), 10)
+        # Pole
+        pygame.draw.line(self.screen, self.BROWN, (160, 400), (160, 140), 10)
+        # Top
+        pygame.draw.line(self.screen, self.BROWN, (156, 140), (400, 140), 10)
+        # Rope
+        pygame.draw.line(self.screen, self.BROWN, (400, 136), (400, 200), 10)
+        # Pole and Top support
+        pygame.draw.line(self.screen, self.BROWN, (165, 200), (250, 140), 10)
+       
+
         tries_lost = 6 - self.game.remaining_tries
         
         if tries_lost >= 1:  # Head
-            pygame.draw.circle(self.screen, self.BLACK, (400, 180), 30, 5)
+            pygame.draw.circle(self.screen, self.BLACK, (400, 230), 30, 5)
         if tries_lost >= 2:  # Body
-            pygame.draw.line(self.screen, self.BLACK, (400, 210), (400, 350), 5)
+            pygame.draw.line(self.screen, self.BLACK, (400, 260), (400, 400), 5)
         if tries_lost >= 3:  # Left arm
-            pygame.draw.line(self.screen, self.BLACK, (400, 250), (350, 300), 5)
+            pygame.draw.line(self.screen, self.BLACK, (400, 300), (350, 350), 6)
         if tries_lost >= 4:  # Right arm
-            pygame.draw.line(self.screen, self.BLACK, (400, 250), (450, 300), 5)
+            pygame.draw.line(self.screen, self.BLACK, (400, 300), (450, 350), 6)
         if tries_lost >= 5:  # Left leg
-            pygame.draw.line(self.screen, self.BLACK, (400, 350), (350, 450), 5)
+            pygame.draw.line(self.screen, self.BLACK, (400, 400), (350, 480), 6)
         if tries_lost >= 6:  # Right leg
-            pygame.draw.line(self.screen, self.BLACK, (400, 350), (450, 450), 5)
+            pygame.draw.line(self.screen, self.BLACK, (400, 400), (450, 480), 6)
     
     def draw_word(self):
         """Draw the current state of the word."""
-        word_surface = self.font.render(self.game.get_word_state(), True, self.BLACK)
+        word_surface = self.font.render(self.game.get_ui_word_state(), True, self.BLACK)
         word_rect = word_surface.get_rect(center=(self.width // 2, 520))
         self.screen.blit(word_surface, word_rect)
     
@@ -83,16 +96,29 @@ class HangmanUI:
                         self.game.reset_game()
             
             # Draw everything
-            self.screen.fill(self.WHITE)
+            self.screen.blit(self.background,(0,0))
+            #self.screen.fill(self.WHITE)
             self.draw_hangman()
             self.draw_word()
             self.draw_guessed_letters()
             self.draw_game_over()
             
+            # So only takes results if game over and only once for every game
+            if self.game.game_over == False:
+                take_result = True
+            
             if self.game.game_over:
                 hint = self.small_font.render("Press SPACE to play again", True, self.GRAY)
                 hint_rect = hint.get_rect(center=(self.width // 2, 450))
                 self.screen.blit(hint, hint_rect)
+
+                if take_result == True:
+                    # Takes the results and appends it to data_human.csv 
+                    result = (int(self.game.won),self.game.word,len(self.game.word))
+                    with open('data_human.csv',mode='a',newline='') as data_human:
+                        writer = csv.writer(data_human)
+                        writer.writerow(result)
+                    take_result = False
             
             pygame.display.flip()
         

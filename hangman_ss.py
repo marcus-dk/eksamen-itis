@@ -5,6 +5,7 @@ from typing import List, Set, Dict
 import argparse
 from hangman import Hangman
 import numpy as np
+import csv
 
 def calculate_letter_frequencies(words: List[str]) -> Dict[str, float]:
     """Calculate the frequency of each letter in the word list."""
@@ -181,6 +182,9 @@ def play_game(strategy: HangmanStrategy, game: Hangman, show_progress: bool = Fa
         print(f"The word was: {game.word}")
         print("Won!" if game.won else "Lost!")
     
+    
+
+
     return game.won
 
 def evaluate_strategy(strategy_name: str, num_games: int = 100, show_example: bool = True) -> float:
@@ -207,6 +211,13 @@ def evaluate_strategy(strategy_name: str, num_games: int = 100, show_example: bo
         game.reset_game()
         won = play_game(strategy, game, show_progress=False)
         wins += int(won)
+        
+        # Takes the results and appends it to data_"stragety".csv, depending which stragety was used
+        result = (int(game.won),game.word,len(game.word))
+        data_filename = "data_" + strategy_name + ".csv"
+        with open(data_filename,mode='a',newline='') as data:
+            writer = csv.writer(data)
+            writer.writerow(result)        
     
     win_rate = wins / (num_games + (1 if show_example else 0))
     print(f"\nStrategy: {strategy_name}")
