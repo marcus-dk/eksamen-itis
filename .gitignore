@@ -5,3 +5,8 @@ __pycache__/
 # ML model
 hangman_model.pth
 
+# data sets
+data_e.csv
+data_human.csv
+data_mc.csv
+data_nn.csv
