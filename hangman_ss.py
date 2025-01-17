@@ -213,7 +213,7 @@ def evaluate_strategy(strategy_name: str, num_games: int = 100, show_example: bo
         wins += int(won)
         
         # Takes the results and appends it to data_"stragety".csv, depending which stragety was used
-        result = (int(game.won),game.word,len(game.word))
+        result = (int(game.won),game.word,len(game.word),(6-game.remaining_tries))
         data_filename = "data_" + strategy_name + ".csv"
         with open(data_filename,mode='a',newline='') as data:
             writer = csv.writer(data)
