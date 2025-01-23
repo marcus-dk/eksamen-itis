@@ -321,7 +321,7 @@ class HangmanNeuralSolver:
             total_tries += tries
             
             # Collect data in same format as other strategies
-            result = (int(game.won), game.word, len(game.word))
+            result = (int(game.won), game.word, len(game.word),(6-game.remaining_tries))
             with open('data_nn.csv', mode='a', newline='') as data_file:
                 writer = csv.writer(data_file)
                 writer.writerow(result)
